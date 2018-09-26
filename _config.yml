@@ -1,0 +1,30 @@
+title: basicinfosecurity
+description: >
+  A learning resource of topics broken down to the basics.
+
+url: https://basicinfosecurity.github.io/
+baseurl: ""
+paginate_path: "blog/page:num/"
+permalink: blog/:title/
+
+markdown: kramdown
+highlighter: rouge
+gems: [jekyll-paginate]
+paginate: 5
+
+navigation:
+ - title: Home
+   url: /index.html
+ - title: Articles
+   url: /articles
+ - title: About
+   url: /about
+ - title: Contact
+   url: /contact
+
+social:
+   github: basicinfosecurity
+   linkedin: https://ph.linkedin.com/in/jerowin-santillan-1a91ab101
+   email: jerowin.santillan@gmail.com
+
+google_analytics: "UA-58263416-1"
