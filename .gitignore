@@ -3,3 +3,6 @@ _site/
 .bundle/
 vendor/
 .sass-cache/
+.claude/
+Gemfile.lock
+gulpfile.js
