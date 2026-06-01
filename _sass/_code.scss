@@ -1,0 +1,348 @@
+// ─────────────────────────────────────────────────────────────────
+// Code blocks
+//
+// Light: warm off-white bg (#f2f1ec), dark ink, readable colours.
+// Dark:  One Dark (#282c34), off-white base, One Dark tokens.
+//
+// Rouge's inline style="" attrs are stripped by theme.js so plain
+// CSS rules work without !important hacks.
+// ─────────────────────────────────────────────────────────────────
+
+// Light syntax colours — "Warm Ink"
+// Hues shifted to harmonise with the blog's sepia/parchment palette.
+$c-kw:  #6b3fa0;  // keyword   — warm indigo-purple
+$c-fn:  #1a5296;  // function  — warm navy blue
+$c-st:  #3a7a40;  // string    — warm forest green
+$c-cm:  #78705e;  // comment   — warm taupe (vs neutral grey)
+$c-nm:  #a85e00;  // number    — amber-brown
+$c-bi:  #1f6878;  // builtin   — warm teal
+$c-var: #963020;  // variable  — terracotta/rust
+$c-op:  #1a1a18;  // operator  — matches blog --fg exactly
+
+// Dark syntax colours — "Warm Night"
+// Background matches blog's own dark --bg2 (#2b2a26) instead of One Dark blue-grey.
+$d-kw:  #c47dd6;  // keyword   — warm purple
+$d-fn:  #72b0e8;  // function  — warm sky blue
+$d-st:  #8bbf66;  // string    — warm olive-green
+$d-cm:  #6a6052;  // comment   — warm brown-grey
+$d-nm:  #d4a060;  // number    — warm amber
+$d-bi:  #52baba;  // builtin   — warm teal-cyan
+$d-var: #d07068;  // variable  — warm salmon/terracotta
+$d-op:  #c8c3ae;  // operator  — warm off-white (matches dark base text)
+
+// ── Pre base ──────────────────────────────────────────────────
+pre {
+  background:              #f2f1ec;
+  color:                   #24292e;
+  font-family:             $font-mono;
+  // Keep wide code lines scrollable rather than breaking out of the layout.
+  max-width:               100%;
+  overflow-x:              auto;
+  font-size:               13px;
+  line-height:             1.7;
+  overflow-x:              auto;
+  margin:                  0;
+  padding:                 16px 18px;
+  border-radius:           4px;
+  border:                  1px solid #d4d2c8;
+  border-left:             3px solid #8a8270;
+  // Disable Fira Code ligatures — they span <span> boundaries in
+  // Rouge output and cause Chromium to drop or misplace tokens.
+  font-variant-ligatures:  none;
+  font-feature-settings:   "liga" 0, "calt" 0;
+  tab-size:                4;
+
+  code {
+    background: transparent;
+    border:     none;
+    padding:    0;
+    font-size:  inherit;
+    color:      inherit;
+  }
+}
+
+// ── Fenced block wrapper ──────────────────────────────────────
+div.highlighter-rouge {
+  margin:        1.5em 0;
+  clear:         both;
+  border-radius: 4px;
+  max-width:     100%;
+  overflow-x:    auto;   // scroll wide code; don't expand the page
+
+  div.highlight { background: #f2f1ec; }
+
+  pre.highlight {
+    background:  #f2f1ec;
+    color:       #24292e;
+    border:      1px solid #d4d2c8;
+    border-left: 3px solid #8a8270;
+    margin:      0;
+    padding:     16px 18px;
+  }
+}
+
+// ── {% highlight %} tag blocks ────────────────────────────────
+figure.highlight {
+  margin:        1.5em 0;
+  clear:         both;
+  border-radius: 4px;
+  max-width:     100%;
+  overflow-x:    auto;
+
+  pre {
+    background:  #f2f1ec;
+    color:       #24292e;
+    border:      1px solid #d4d2c8;
+    border-left: 3px solid #8a8270;
+    margin:      0;
+    padding:     16px 18px;
+  }
+}
+
+// ── Rouge table reset (inline styles stripped by JS) ─────────
+.highlight {
+  background: #f2f1ec;
+
+  table, thead, tbody, tr, td, th {
+    background:      #f2f1ec;
+    border:          none;
+    padding:         0;
+    margin:          0;
+    border-spacing:  0;
+    border-collapse: collapse;
+  }
+
+  .rouge-gutter, .gl {
+    background:     #f2f1ec;
+    border-right:   1px solid #d4d2c8;
+    color:          #6a737d;
+    padding:        16px 10px 16px 16px;
+    text-align:     right;
+    vertical-align: top;
+    user-select:    none;
+    font-size:      11px;
+    width:          2.5em;
+  }
+
+  .rouge-code, .code {
+    background:     #f2f1ec;
+    padding:        0;
+    vertical-align: top;
+    pre { padding: 16px 18px; }
+  }
+}
+
+// ── Light mode token colours ──────────────────────────────────
+.highlight {
+  .c,  .cm, .cp, .c1, .cs              { color: #{$c-cm}; font-style: italic; }
+  .err                                  { color: #b31d28; background: #ffeef0; }
+  .k,  .kc, .kd, .kn, .kp, .kr, .kt   { color: #{$c-kw}; font-weight: 600; }
+  .o,  .ow                              { color: #{$c-op}; }
+  .l,  .ld                              { color: #{$c-st}; }
+  .m,  .mf, .mh, .mi, .mo, .mb, .mx   { color: #{$c-nm}; }
+  .s,  .sb, .sc, .sd, .s2, .se,
+  .sh, .si, .sx, .sr, .s1, .ss         { color: #{$c-st}; }
+  .n,  .na                              { color: #{$c-op}; }
+  .nb, .bp                              { color: #{$c-bi}; }
+  .nc                                   { color: #{$c-bi}; font-weight: 600; }
+  .no                                   { color: #{$c-nm}; }
+  .nd                                   { color: #{$c-bi}; }
+  .ni                                   { color: #{$c-op}; }
+  .ne                                   { color: #{$c-var}; }
+  .nf, .fm                              { color: #{$c-fn}; }
+  .nl, .nx                              { color: #{$c-fn}; }
+  .nn                                   { color: #{$c-bi}; }
+  .py                                   { color: #{$c-op}; }
+  .nt                                   { color: #{$c-kw}; }
+  .nv, .vc, .vg, .vi, .vm             { color: #{$c-var}; }
+  .p,  .pi                              { color: #{$c-op}; }
+  .ge                                   { font-style: italic; }
+  .gs                                   { font-weight: bold; }
+  .gd                                   { color: #b31d28; background: #ffeef0; }
+  .gi                                   { color: #{$c-st}; background: #f0fff4; }
+  .go                                   { color: #{$c-cm}; }
+  .gp                                   { color: #{$c-fn}; font-weight: bold; }
+  .gr                                   { color: #b31d28; }
+  .gt                                   { color: #{$c-var}; }
+  .w                                    { color: #{$c-op}; }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+[data-theme="dark"] {
+  pre,
+  div.highlighter-rouge pre,
+  div.highlighter-rouge pre.highlight,
+  figure.highlight pre {
+    background:        #2b2a26;  // blog --bg2 dark
+    color:             #c8c3ae;  // warm off-white base text
+    border-color:      #3e3c34;  // blog --rule dark
+    border-left-color: #918f7e;  // blog --dim2 dark
+  }
+
+  div.highlighter-rouge div.highlight { background: #2b2a26; }
+
+  .highlight {
+    background: #2b2a26;
+
+    table, thead, tbody, tr, td, th {
+      background: #2b2a26;
+      border:     none;
+      padding:    0;
+    }
+
+    .rouge-gutter, .gl {
+      background:   #2b2a26;
+      border-right: 1px solid #3e3c34;  // blog --rule dark
+      color:        #4a4840;             // warm dim gutter numbers
+    }
+
+    .rouge-code, .code { background: #2b2a26; }
+
+    .c,  .cm, .cp, .c1, .cs              { color: #{$d-cm}; font-style: italic; }
+    .err                                  { color: #f44747; background: transparent; }
+    .k,  .kc, .kd, .kn, .kp, .kr, .kt   { color: #{$d-kw}; font-weight: 600; }
+    .o,  .ow                              { color: #{$d-op}; }
+    .l,  .ld                              { color: #{$d-st}; }
+    .m,  .mf, .mh, .mi, .mo, .mb, .mx   { color: #{$d-nm}; }
+    .s,  .sb, .sc, .sd, .s2, .se,
+    .sh, .si, .sx, .sr, .s1, .ss         { color: #{$d-st}; }
+    .n,  .na                              { color: #{$d-op}; }
+    .nb, .bp                              { color: #{$d-bi}; }
+    .nc                                   { color: #{$d-bi}; font-weight: 600; }
+    .no                                   { color: #{$d-nm}; }
+    .nd                                   { color: #{$d-bi}; }
+    .ni                                   { color: #{$d-op}; }
+    .ne                                   { color: #{$d-var}; }
+    .nf, .fm                              { color: #{$d-fn}; }
+    .nl, .nx                              { color: #{$d-fn}; }
+    .nn                                   { color: #{$d-bi}; }
+    .py                                   { color: #{$d-op}; }
+    .nt                                   { color: #{$d-kw}; }
+    .nv, .vc, .vg, .vi, .vm             { color: #{$d-var}; }
+    .p,  .pi                              { color: #{$d-op}; }
+    .ge                                   { font-style: italic; }
+    .gs                                   { font-weight: bold; }
+    .gd                                   { color: #f44747; background: transparent; }
+    .gi                                   { color: #{$d-st}; background: transparent; }
+    .go                                   { color: #{$d-cm}; }
+    .gp                                   { color: #{$d-fn}; font-weight: bold; }
+    .gr                                   { color: #f44747; }
+    .gt                                   { color: #{$d-var}; }
+    .w                                    { color: #{$d-op}; }
+  }
+}
+
+// Duplicate for prefers-color-scheme auto mode
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    pre,
+    div.highlighter-rouge pre,
+    div.highlighter-rouge pre.highlight,
+    figure.highlight pre {
+      background:        #2b2a26;
+      color:             #c8c3ae;
+      border-color:      #3e3c34;
+      border-left-color: #918f7e;
+    }
+
+    div.highlighter-rouge div.highlight { background: #2b2a26; }
+
+    .highlight {
+      background: #2b2a26;
+
+      table, thead, tbody, tr, td, th { background: #2b2a26; border: none; padding: 0; }
+      .rouge-gutter, .gl { background: #2b2a26; border-right: 1px solid #3e3c34; color: #4a4840; }
+      .rouge-code, .code { background: #2b2a26; }
+
+      .c,  .cm, .cp, .c1, .cs              { color: #{$d-cm}; font-style: italic; }
+      .err                                  { color: #f44747; background: transparent; }
+      .k,  .kc, .kd, .kn, .kp, .kr, .kt   { color: #{$d-kw}; font-weight: 600; }
+      .o,  .ow                              { color: #{$d-op}; }
+      .l,  .ld                              { color: #{$d-st}; }
+      .m,  .mf, .mh, .mi, .mo, .mb, .mx   { color: #{$d-nm}; }
+      .s,  .sb, .sc, .sd, .s2, .se,
+      .sh, .si, .sx, .sr, .s1, .ss         { color: #{$d-st}; }
+      .n,  .na                              { color: #{$d-op}; }
+      .nb, .bp                              { color: #{$d-bi}; }
+      .nc                                   { color: #{$d-bi}; font-weight: 600; }
+      .no                                   { color: #{$d-nm}; }
+      .nd                                   { color: #{$d-bi}; }
+      .ni                                   { color: #{$d-op}; }
+      .ne                                   { color: #{$d-var}; }
+      .nf, .fm                              { color: #{$d-fn}; }
+      .nl, .nx                              { color: #{$d-fn}; }
+      .nn                                   { color: #{$d-bi}; }
+      .py                                   { color: #{$d-op}; }
+      .nt                                   { color: #{$d-kw}; }
+      .nv, .vc, .vg, .vi, .vm             { color: #{$d-var}; }
+      .p,  .pi                              { color: #{$d-op}; }
+      .ge                                   { font-style: italic; }
+      .gs                                   { font-weight: bold; }
+      .gd                                   { color: #f44747; background: transparent; }
+      .gi                                   { color: #{$d-st}; background: transparent; }
+      .go                                   { color: #{$d-cm}; }
+      .gp                                   { color: #{$d-fn}; font-weight: bold; }
+      .gr                                   { color: #f44747; }
+      .gt                                   { color: #{$d-var}; }
+      .w                                    { color: #{$d-op}; }
+    }
+  }
+}
+
+// ── Inline code ───────────────────────────────────────────────
+.post-body p code,
+.post-body li code,
+.post-body td code,
+.post-body h2 code,
+.post-body h3 code,
+article p code,
+article li code {
+  font-family:   $font-mono;
+  font-size:     13px;
+  background:    var(--bg2);
+  border:        1px solid var(--rule);
+  border-radius: 2px;
+  padding:       1px 5px;
+  color:         var(--dim);
+}
+
+// ── Manual .code-wrap ─────────────────────────────────────────
+.code-wrap {
+  margin:        1.5em 0;
+  clear:         both;
+  border:        1px solid var(--rule);
+  border-left:   3px solid var(--dim2);
+  border-radius: 4px;
+  overflow:      hidden;
+
+  pre { border: none; border-radius: 0; margin: 0; }
+}
+
+.code-header {
+  background:    var(--bg2);
+  border-bottom: 1px solid var(--rule);
+  padding:       5px 12px;
+  display:       flex;
+  align-items:   center;
+  justify-content: space-between;
+}
+
+.code-lang {
+  font-family:    $font-mono;
+  font-size:      10px;
+  color:          var(--dim2);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.code-copy {
+  font-family: $font-sc;
+  font-size:   9px;
+  color:       var(--dim2);
+  cursor:      pointer;
+  background:  none;
+  border:      none;
+  padding:     0;
+  transition:  color .15s;
+  &:hover { color: var(--fg); }
+}

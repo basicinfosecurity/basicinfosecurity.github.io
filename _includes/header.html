@@ -1,15 +1,60 @@
- <div class="header">
-     <div class="container">
-         <h1 class="logo"><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
-         <nav class="nav-collapse">
-             <ul class="noList">
-                 {% for link in site.navigation %}{% assign current = nil %}{% if page.url contains link.url or forloop.first and page.url == '/' or page.url == 'index.html' %}{% assign current = 'current' %}{% endif %}
-                 <li class="element {% if forloop.first %}first{% endif %} {{ current }} {% if forloop.last %}last{% endif %}">
-                     <a href="{{ link.url | prepend: site.baseurl }}">{{ link.title }}</a>
-                 </li> 
-                 {% endfor %}
-                 <li> <a href="https://github.com/{{ site.social.github }}" target="_blank">GitHub</a></li>
-             </ul>
-         </nav>
-     </div>
- </div><!-- end .header -->
+{%- comment -%}
+  Static site header — always uses site.banner_image from _config.yml.
+  Per-post images (page.image) are rendered in the post body, not here.
+  Accepts a bare filename (resolved to /assets/img/) or a full path.
+{%- endcomment -%}
+{%- if site.banner_image and site.banner_image != "" -%}
+  {%- assign _bi_first = site.banner_image | slice: 0 -%}
+  {%- if _bi_first == "/" -%}
+    {%- assign header_bg = site.banner_image -%}
+  {%- else -%}
+    {%- assign header_bg = "/assets/img/" | append: site.banner_image -%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign header_bg = "" -%}
+{%- endif -%}
+
+<header class="site-header{% if header_bg != '' %} has-image{% endif %}">
+
+  {%- if header_bg != "" -%}
+  <div class="header-bg">
+    <img src="{{ header_bg | prepend: site.baseurl }}"
+         alt=""
+         loading="eager">
+  </div>
+  <div class="header-gradient"></div>
+  {%- endif -%}
+
+  <div class="header-inner">
+    <a class="site-title" href="{{ '/' | prepend: site.baseurl }}">{{ site.title }}</a>
+
+    <div class="header-right">
+      <nav class="site-nav" aria-label="Main navigation">
+        {%- for item in site.navigation -%}
+        <a href="{{ item.url | prepend: site.baseurl }}"
+           {% if page.url == item.url %}aria-current="page"{% endif %}>
+          {{ item.title }}
+        </a>
+        {%- endfor -%}
+      </nav>
+
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"  x2="12" y2="3"  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="1"  y1="12" x2="3"  y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+</header>

@@ -1,0 +1,83 @@
+// ── CSS custom properties (light mode defaults) ────────────────
+:root {
+  color-scheme: light dark;  // tells Chromium this page owns its dark mode
+  --bg:      #{$light-bg};
+  --bg2:     #{$light-bg2};
+  --fg:      #{$light-fg};
+  --dim:     #{$light-dim};
+  --dim2:    #{$light-dim2};
+  --rule:    #{$light-rule};
+  --link:    #{$light-link};
+  --link-visited: #6a3a8a;
+  --tag-fg:  #{$light-tag-fg};
+  --tag-bd:  #{$light-tag-bd};
+  --tag-bg:  #{$light-tag-bg};
+}
+
+[data-theme="dark"] {
+  --bg:      #{$dark-bg};
+  --bg2:     #{$dark-bg2};
+  --fg:      #{$dark-fg};
+  --dim:     #{$dark-dim};
+  --dim2:    #{$dark-dim2};
+  --rule:    #{$dark-rule};
+  --link:    #{$dark-link};
+  --link-visited: #b08ad0;
+  --tag-fg:  #{$dark-tag-fg};
+  --tag-bd:  #{$dark-tag-bd};
+  --tag-bg:  #{$dark-tag-bg};
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:      #{$dark-bg};
+    --bg2:     #{$dark-bg2};
+    --fg:      #{$dark-fg};
+    --dim:     #{$dark-dim};
+    --dim2:    #{$dark-dim2};
+    --rule:    #{$dark-rule};
+    --link:    #{$dark-link};
+    --link-visited: #b08ad0;
+    --tag-fg:  #{$dark-tag-fg};
+    --tag-bd:  #{$dark-tag-bd};
+    --tag-bg:  #{$dark-tag-bg};
+  }
+}
+
+// ── Reset ──────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: $font-size-base;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-serif;
+  font-size: $font-size-base;
+  line-height: $line-height;
+  color: var(--fg);
+  background: var(--bg);
+  transition: background .25s, color .25s;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main { flex: 1; }
+
+// ── Links — clearly blue, underlined ──────────────────────────
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: opacity .18s;
+
+  &:visited { color: var(--link-visited); }
+  &:hover   { opacity: .72; text-decoration-thickness: 2px; }
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+::selection { background: var(--fg); color: var(--bg); }

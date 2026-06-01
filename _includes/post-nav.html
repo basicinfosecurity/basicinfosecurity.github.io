@@ -1,0 +1,55 @@
+{%- comment -%}
+  Long Haul postNav: image-backed prev/next cards.
+  Resolves banner image using the same priority as header.html:
+    1. page.feature-image  (full path)
+    2. page.image          (filename → prefixed with /assets/img/)
+  Falls back to a plain-colour card when no image is set.
+{%- endcomment -%}
+
+{%- assign prev_post = page.previous -%}
+{%- assign next_post = page.next -%}
+
+{%- if prev_post.url or next_post.url -%}
+
+{%- comment -%}Resolve prev image{%- endcomment -%}
+{%- if prev_post['feature-image'] and prev_post['feature-image'] != "" -%}
+  {%- assign prev_img = prev_post['feature-image'] -%}
+{%- elsif prev_post.image and prev_post.image != "" -%}
+  {%- assign prev_img = "/assets/img/" | append: prev_post.image -%}
+{%- else -%}
+  {%- assign prev_img = "" -%}
+{%- endif -%}
+
+{%- comment -%}Resolve next image{%- endcomment -%}
+{%- if next_post['feature-image'] and next_post['feature-image'] != "" -%}
+  {%- assign next_img = next_post['feature-image'] -%}
+{%- elsif next_post.image and next_post.image != "" -%}
+  {%- assign next_img = "/assets/img/" | append: next_post.image -%}
+{%- else -%}
+  {%- assign next_img = "" -%}
+{%- endif -%}
+
+<div class="postNav clearfix">
+
+  {%- if prev_post.url -%}
+  <a class="prev{% if prev_img != '' %} has-image{% endif %}"
+     href="{{ prev_post.url | prepend: site.baseurl }}"
+     {%- if prev_img != "" %} style="background-image: url('{{ prev_img | prepend: site.baseurl }}')"{% endif %}>
+    <span class="pnav-arrow">←</span>
+    <span class="pnav-label">Previous</span>
+    <span class="pnav-title">{{ prev_post.title }}</span>
+  </a>
+  {%- endif -%}
+
+  {%- if next_post.url -%}
+  <a class="next{% if next_img != '' %} has-image{% endif %}"
+     href="{{ next_post.url | prepend: site.baseurl }}"
+     {%- if next_img != "" %} style="background-image: url('{{ next_img | prepend: site.baseurl }}')"{% endif %}>
+    <span class="pnav-arrow">→</span>
+    <span class="pnav-label">Next</span>
+    <span class="pnav-title">{{ next_post.title }}</span>
+  </a>
+  {%- endif -%}
+
+</div>
+{%- endif -%}

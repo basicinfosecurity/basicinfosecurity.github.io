@@ -1,0 +1,41 @@
+// ── Site footer ────────────────────────────────────────────────
+.site-footer {
+  border-top: 1px solid var(--rule);
+  padding: 14px 0;
+  background: var(--bg2);
+  transition: background .25s;
+}
+
+.footer-inner {
+  max-width: $max-width-post;
+  margin: 0 auto;
+  padding: 0 $side-pad;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-copy {
+  font-family: $font-sc;
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: var(--dim2);
+}
+
+.footer-links {
+  display: flex;
+  gap: 14px;
+
+  a {
+    font-family: $font-sc;
+    font-size: 12px;
+    letter-spacing: .06em;
+    color: var(--dim2);
+    text-decoration: none;
+    transition: color .18s;
+
+    &:hover { color: var(--fg); opacity: 1; }
+  }
+}

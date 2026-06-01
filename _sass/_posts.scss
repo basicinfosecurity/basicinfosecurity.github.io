@@ -1,0 +1,464 @@
+// ── Post list (home / articles) ────────────────────────────────
+.post-list { list-style: none; }
+
+.post-item {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--rule);
+
+  &:first-child { padding-top: 0; }
+}
+
+.entry-cover {
+  display: block;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+  text-decoration: none;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: opacity .2s;
+  }
+
+  &:hover img { opacity: .85; }
+}
+
+.post-date {
+  font-family: $font-sc;
+  font-size: 13px;
+  letter-spacing: .1em;
+  color: var(--dim2);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.post-title-link {
+  font-family: $font-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fg);  // post title keeps ink colour
+  text-decoration: none;
+  display: block;
+  margin-bottom: 5px;
+  transition: opacity .18s;
+  &:hover { opacity: .65; }
+}
+
+.post-meta {
+  font-family: $font-sc;
+  font-size: 13px;
+  letter-spacing: .07em;
+  color: var(--dim2);
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 11px;
+
+  .sep { margin: 0 7px; }
+  .pin { color: var(--fg); }
+}
+
+.post-description {
+  font-family: $font-sc;
+  font-size: 13px;
+  letter-spacing: .06em;
+  color: var(--dim2);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.post-excerpt {
+  font-size: $font-size-base;
+  line-height: $line-height;
+  color: var(--dim);
+  margin-bottom: 14px;
+}
+
+// ── Tags (shared between list and post) ────────────────────────
+.post-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  clear: both;
+}
+
+.tag {
+  font-family: $font-mono;
+  font-size: 10.5px;
+  color: var(--tag-fg);
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-bd);
+  padding: 1px 7px;
+  text-decoration: none;
+  line-height: 1.7;
+  transition: border-color .18s, color .18s;
+
+  &::before { content: '#'; opacity: .5; }
+  &:hover { color: var(--fg); border-color: var(--dim); opacity: 1; }
+}
+
+// ── Pagination ─────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule);
+
+  .page-btn {
+    font-family: $font-sc;
+    font-size: 11.5px;
+    letter-spacing: .06em;
+    padding: 5px 11px;
+    color: var(--dim2);
+    border: 1px solid var(--rule);
+    border-right: none;
+    cursor: pointer;
+    text-decoration: none;
+    background: var(--bg);
+    transition: background .15s, color .15s;
+
+    &:last-child { border-right: 1px solid var(--rule); }
+    &.current    { color: var(--fg); background: var(--bg2); font-weight: 600; }
+    &:hover:not(.current) { color: var(--fg); background: var(--bg2); }
+  }
+}
+
+// ── Post page header (no feature image) ────────────────────────
+.post-page-header {
+  padding: 32px 0 0;
+
+  .post-breadcrumb {
+    font-family: $font-sc;
+    font-size: 10px;
+    letter-spacing: .1em;
+    color: var(--dim2);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+
+    a { color: var(--dim2); text-decoration: none; &:hover { color: var(--fg); } }
+    .sep { opacity: .4; }
+  }
+
+  .post-category-label {
+    font-family: $font-sc;
+    font-size: 10.5px;
+    letter-spacing: .12em;
+    color: var(--dim2);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: $font-serif;
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.18;
+    color: var(--fg);  // post title keeps ink colour
+    margin-bottom: 14px;
+  }
+
+  .post-byline {
+    font-family: $font-sc;
+    font-size: 10.5px;
+    letter-spacing: .07em;
+    color: var(--dim2);
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--rule);
+
+    .sep { margin: 0 8px; }
+    .pin { color: var(--fg); }
+  }
+}
+
+// ── Prose body ─────────────────────────────────────────────────
+article .post-body {
+  padding: 28px 0;
+  // Clip any content (code blocks, tables) that overflows horizontally.
+  // Without this, wide pre elements expand the layout viewport beyond the
+  // device width, breaking position:fixed and @media (max-width:680px).
+  overflow-x: hidden;
+
+  // Drop cap on first paragraph
+  > p:first-of-type::first-letter {
+    float: left;
+    font-size: 3.6em;
+    line-height: .72;
+    font-weight: 600;
+    margin: .04em .08em 0 0;
+    color: var(--fg);  // post title keeps ink colour
+  }
+
+  p {
+    font-size: $font-size-base;
+    line-height: $line-height;
+    color: var(--dim);
+    margin-bottom: 1.3em;
+  }
+
+  // Scroll offset so fixed chrome doesn't obscure anchor targets.
+  // Desktop: no fixed header, small buffer.
+  // Mobile:  fixed header (--header-h) + floating TOC bar (~40px) + buffer.
+  h1, h2, h3, h4 {
+    scroll-margin-top: 80px;
+
+    @media (max-width: 680px) {
+      scroll-margin-top: calc(var(--header-h, 60px) + 50px);
+    }
+  }
+
+  // Heading scale — h2 dominant, h3 subordinate italic
+  h2 {
+    font-family: $font-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--fg);  // post title keeps ink colour
+    margin: 2.2em 0 .65em;
+    padding-bottom: .45em;
+    border-bottom: 1px solid var(--rule);
+    clear: both;
+
+    &:first-child { margin-top: 0; }
+  }
+
+  h3 {
+    font-family: $font-serif;
+    font-size: 17px;
+    font-weight: 600;
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--fg);  // post title keeps ink colour
+    margin: 1.7em 0 .5em;
+    clear: both;
+  }
+
+  h4 {
+    font-family: $font-sc;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: var(--dim);
+    margin: 1.4em 0 .4em;
+    clear: both;
+  }
+
+  ul, ol {
+    padding-left: 1.5em;
+    margin-bottom: 1.3em;
+    color: var(--dim);
+  }
+
+  li { margin-bottom: .4em; line-height: $line-height; }
+
+  strong { color: var(--fg); font-weight: 600; }
+  em     { font-style: italic; }
+
+  blockquote {
+    border-left: 3px solid var(--rule);
+    margin: 1.6em 0;
+    padding: .4em 1.2em;
+    font-style: italic;
+    color: var(--dim2);
+
+    p { margin-bottom: 0; color: var(--dim2); }
+  }
+
+  // Inline code — exclude code inside pre blocks (code blocks handle their own styling)
+  :not(pre) > code {
+    font-family: $font-mono;
+    font-size: 13px;
+    background: var(--bg2);
+    border: 1px solid var(--rule);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--dim);
+  }
+
+  // Horizontal rule
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2em 0;
+  }
+
+  // Images in prose
+  img {
+    max-width: 100%;
+    margin: 1.5em 0;
+    border: 1px solid var(--rule);
+  }
+
+  // Tables
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 14px;
+
+    th, td {
+      border: 1px solid var(--rule);
+      padding: 7px 12px;
+      text-align: left;
+    }
+
+    th {
+      font-family: $font-sc;
+      font-size: 10px;
+      letter-spacing: .1em;
+      color: var(--dim2);
+      background: var(--bg2);
+    }
+  }
+
+  // Callout / note box
+  .callout {
+    background: var(--bg2);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--fg);
+    padding: .85em 1.1em;
+    margin: 1.5em 0;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--dim);
+
+    strong { color: var(--fg); }
+  }
+}
+
+// ── Featured image (Long Haul featuredImage — below post header) ──
+.featuredImage {
+  position: relative;
+  margin: 0 0 2em;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+
+  img {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    object-position: center 25%;
+  }
+
+  .featured-image-credit {
+    display: block;
+    text-align: right;
+    padding: 4px 10px;
+    font-family: $font-sc;
+    font-size: 9px;
+    letter-spacing: .05em;
+    color: var(--dim2);
+    background: var(--bg2);
+    border-top: 1px solid var(--rule);
+  }
+}
+
+// ── Post tags (bottom of post) ──────────────────────────────────
+.post-tags-section {
+  margin-top: 2.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--rule);
+}
+
+// ── Prev / next navigation — Long Haul postNav image cards ────────
+.postNav {
+  display: flex;
+  margin-top: 2.4em;
+  border-top: 1px solid var(--rule);
+  overflow: hidden;
+  border-radius: 0 0 4px 4px;
+
+  // clearfix for float-based fallback
+  &::after { content: ''; display: table; clear: both; }
+
+  a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 130px;
+    padding: 18px 20px;
+    text-decoration: none;
+    position: relative;
+    background-color: var(--bg2);
+    transition: opacity .2s;
+    overflow: hidden;
+
+    // image card
+    &.has-image {
+      background-size: cover;
+      background-position: center 30%;
+
+      // dark scrim — keeps text legible over any image
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          rgba(0,0,0,.72) 0%,
+          rgba(0,0,0,.28) 55%,
+          rgba(0,0,0,.12) 100%
+        );
+        z-index: 0;
+      }
+
+      .pnav-arrow,
+      .pnav-title  { color: #fff; }
+      .pnav-label  { color: rgba(255,255,255,.62); }
+    }
+
+    &.next {
+      text-align: right;
+      align-items: flex-end;
+      border-left: 1px solid var(--rule);
+    }
+
+    &:hover { opacity: .84; }
+  }
+
+  // all text children sit above the scrim
+  .pnav-arrow,
+  .pnav-label,
+  .pnav-title { position: relative; z-index: 1; display: block; }
+
+  .pnav-arrow {
+    font-size: 17px;
+    color: var(--dim2);
+    margin-bottom: 5px;
+    line-height: 1;
+  }
+
+  .pnav-label {
+    font-family: $font-sc;
+    font-size: 9.5px;
+    letter-spacing: .1em;
+    color: var(--dim2);
+    margin-bottom: 5px;
+  }
+
+  .pnav-title {
+    font-family: $font-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--dim);
+  }
+}
+
+// ── Reading time ───────────────────────────────────────────────
+.reading-time {
+  font-family: $font-sc;
+  font-size: 10.5px;
+  letter-spacing: .07em;
+  color: var(--dim2);
+}

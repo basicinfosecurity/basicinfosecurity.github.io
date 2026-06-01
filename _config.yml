@@ -1,30 +1,54 @@
-title: pleasedonthack.me
-description: >
-  A learning resource of topics broken down to the basics.
+title:         pleasedonthack.me
+description:   A learning resource of topics broken down to the basics.
+url:           https://basicinfosecurity.github.io/
+baseurl:       ""
+paginate_path: "/blog/page:num/"
+permalink:     blog/:title/
+markdown:      kramdown
+highlighter:   rouge
 
-url: https://basicinfosecurity.github.io/
-baseurl: ""
-paginate_path: "blog/page:num/"
-permalink: blog/:title/
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: highlight
+    span:
+      line_numbers: false
+    block:
+      line_numbers: false
+      start_line: 1
 
-markdown: kramdown
-highlighter: rouge
-gems: [jekyll-paginate]
+plugins:
+  - jekyll-paginate
+  - jekyll-feed
+  - jekyll-seo-tag
+
 paginate: 5
 
+theme_mode: auto
+# Default header background image (Long Haul style).
+# Accepts a filename relative to assets/img/ (e.g. "stanczyk_scaled.jpg")
+# or a full path from the site root (e.g. "/assets/img/stanczyk_scaled.jpg").
+# Per-post images (image: in front matter) override this.
+banner_image: "Sandro_Botticelli_-_La_Carte_de_l'Enfer(darkened).jpg"
+
 navigation:
- - title: Home
-   url: /index.html
- - title: Articles
-   url: /articles
- - title: About
-   url: /about
- - title: Contact
-   url: /contact
+  - title: Home
+    url:   /
+  - title: Articles
+    url:   /articles
+  - title: About
+    url:   /about
+  - title: Contact
+    url:   /contact
 
 social:
-   github: basicinfosecurity
-   linkedin: https://ph.linkedin.com/in/jerowin-santillan-1a91ab101
-   email: jerowin.santillan@gmail.com
+  github:   basicinfosecurity
+  linkedin: https://ph.linkedin.com/in/jerowin-santillan-1a91ab101
+  email:    jerowin.santillan@gmail.com
 
 google_analytics: "UA-58263416-1"
+
+feed:
+  path: feed.xml

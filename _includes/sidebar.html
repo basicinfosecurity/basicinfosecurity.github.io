@@ -1,0 +1,47 @@
+<aside class="sidebar">
+
+  <!-- Recent Posts -->
+  <div class="widget">
+    <div class="widget-title">Recent Posts</div>
+    <ul class="recent-list">
+      {%- for post in site.posts limit:5 -%}
+      <li>
+        <div class="recent-date">{{ post.date | date: "%d %b %Y" }}</div>
+        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+      </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+
+  <!-- Categories -->
+  {%- if site.categories.size > 0 -%}
+  <div class="widget">
+    <div class="widget-title">Categories</div>
+    <ul class="cat-list">
+      {%- for category in site.categories -%}
+      <li>
+        <a href="{{ '/categories#' | append: category[0] | prepend: site.baseurl }}">
+          {{ category[0] }}
+        </a>
+        <span class="cat-count">{{ category[1].size }}</span>
+      </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+  {%- endif -%}
+
+  <!-- Tags -->
+  {%- if site.tags.size > 0 -%}
+  <div class="widget">
+    <div class="widget-title">Tags</div>
+    <div class="tag-cloud">
+      {%- for tag in site.tags -%}
+      <a class="tag" href="{{ '/tags#' | append: tag[0] | prepend: site.baseurl }}">
+        {{ tag[0] }}
+      </a>
+      {%- endfor -%}
+    </div>
+  </div>
+  {%- endif -%}
+
+</aside>

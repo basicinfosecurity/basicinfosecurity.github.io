@@ -1,0 +1,3 @@
+# Local development overrides — do not commit to production
+url: "http://localhost:4000"
+baseurl: ""

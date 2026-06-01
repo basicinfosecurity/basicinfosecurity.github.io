@@ -1,0 +1,265 @@
+// ── Desktop: TOC sidebar column ────────────────────────────────
+// .toc-col is a plain full-height grid cell (no sticky here).
+// Sticky lives on .toc-inner so its containing block equals the
+// full article height — the same pattern used by Chirpy.
+
+.toc-col {
+  // Hidden on mobile; mobile has its own floating bar below.
+  @media (max-width: 680px) { display: none; }
+
+  details.toc-details summary.toc-title {
+    font-family:    $font-sc;
+    font-size:      14px;
+    font-weight:    600;
+    letter-spacing: .16em;
+    color:          var(--dim2);
+    margin-bottom:  10px;
+    padding-bottom: 7px;
+    border-bottom:  1px solid var(--rule);
+    list-style:     none;
+    pointer-events: none;   // desktop: non-interactive, always open
+    display:        block;
+    &::-webkit-details-marker { display: none; }
+    &::after { display: none; }
+  }
+}
+
+.toc-inner {
+  position:   sticky;
+  top:        16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding-top: 32px;
+}
+
+// ── TOC list (shared by desktop sidebar and mobile dropdown) ────
+.toc-list {
+  list-style: none;
+  margin:     0;
+  padding:    0;
+
+  li { margin: 0; }
+
+  a {
+    font-family:    $font-sc;
+    font-size:      17px;
+    letter-spacing: .04em;
+    color:          var(--dim2);
+    text-decoration: none;
+    display:        block;
+    padding:        3px 0 3px 8px;
+    border-left:    2px solid transparent;
+    line-height:    1.5;
+    transition:     color .15s, border-color .15s;
+
+    &:hover  { color: var(--fg); }
+    &.active { color: var(--fg); border-left-color: var(--fg); font-weight: 600; }
+  }
+
+  .toc-h1 a { padding-left: 8px; }
+  .toc-h2 a { padding-left: 18px; }
+  .toc-h3 a { padding-left: 28px; }
+}
+
+.toc-rule {
+  border:     none;
+  border-top: 1px solid var(--rule);
+  margin:     13px 0 11px;
+}
+
+.toc-meta {
+  font-family:    $font-sc;
+  font-size:      11px;
+  letter-spacing: .06em;
+  color:          var(--dim2);
+  display:        flex;
+  flex-direction: column;
+  gap:            4px;
+}
+
+// ── Mobile sticky TOC bar (scroll-triggered) ────────────────────
+// Hidden on desktop; shown only on mobile via media query.
+// Initially off-screen; slides in after post header scrolls out of view.
+
+.toc-mobile-wrap {
+  display: none;  // hidden on desktop
+
+  @media (max-width: 680px) {
+    display: block;
+    position: fixed;
+    top:      calc(var(--header-h, 60px) - 1px);
+    left:     0;
+    right:    0;
+    z-index:  100;
+    opacity:         0;
+    pointer-events:  none;
+    transform:       translateY(-100%);
+    transition:      opacity .2s, transform .2s;
+
+    &.is-visible {
+      opacity:        1;
+      pointer-events: auto;
+      transform:      translateY(0);
+    }
+  }
+}
+
+.toc-mobile-btn {
+  display:         flex;
+  align-items:     center;
+  width:           100%;
+  padding:         9px 16px;
+  background:      var(--bg);
+  border:          none;
+  border-bottom:   1px solid var(--rule);
+  box-shadow:      0 2px 4px rgba(0,0,0,.05);
+  font-family:     $font-sc;
+  font-size:       14px;
+  font-weight:     600;
+  letter-spacing:  .14em;
+  color:           var(--dim2);
+  cursor:          pointer;
+  text-align:      left;
+
+  .toc-mobile-label { flex: 1; }
+
+  .toc-chevron {
+    width:  14px;
+    height: 14px;
+    fill:   none;
+    stroke: currentColor;
+    stroke-width:    2;
+    stroke-linecap:  round;
+    stroke-linejoin: round;
+    transition: transform .2s;
+  }
+
+  &[aria-expanded="true"] .toc-chevron { transform: rotate(180deg); }
+  &:hover { color: var(--fg); }
+}
+
+// ── Mobile bottom-sheet panel ────────────────────────────────────
+.toc-mobile-panel {
+  display: none;
+
+  @media (max-width: 680px) {
+    display:        block;
+    position:       fixed;
+    top:            calc(var(--header-h, 60px) + 38px); // below header + bar
+    left:           0;
+    right:          0;
+    z-index:        200;
+    opacity:        0;
+    pointer-events: none;
+    transition:     opacity .2s;
+
+    &.is-open {
+      opacity:        1;
+      pointer-events: auto;
+    }
+  }
+}
+
+.toc-panel-sheet {
+  width:       100%;
+  max-height:  calc(100vh - 120px);
+  background:  var(--bg);
+  box-shadow:  0 4px 16px rgba(0,0,0,.15);
+  border-bottom: 1px solid var(--rule);
+  display:     flex;
+  flex-direction: column;
+  overflow:    hidden;
+  transform:   translateY(-8px);
+  transition:  transform .2s;
+
+  .toc-mobile-panel.is-open & {
+    transform: translateY(0);
+  }
+}
+
+.toc-panel-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         10px 16px;
+  border-bottom:   1px solid var(--rule);
+  flex-shrink:     0;
+}
+
+.toc-panel-title {
+  font-family:    $font-sc;
+  font-size:      14px;
+  font-weight:    600;
+  letter-spacing: .14em;
+  color:          var(--dim2);
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+  white-space:    nowrap;
+}
+
+.toc-panel-close {
+  background:  none;
+  border:      none;
+  font-size:   14px;
+  color:       var(--dim2);
+  cursor:      pointer;
+  padding:     0;
+  flex-shrink: 0;
+  margin-left: 12px;
+  line-height: 1;
+  &:hover { color: var(--fg); }
+}
+
+.toc-mobile-panel nav {
+  overflow-y: auto;
+  flex:       1;
+  min-height: 0;
+
+  .toc-list {
+    padding: 8px 16px 12px;
+  }
+}
+
+// ── Back-to-top button ─────────────────────────────────────────
+.back-to-top {
+  position:   fixed;
+  bottom:     28px;
+  right:      28px;
+  z-index:    300;
+  width:      38px;
+  height:     38px;
+  border:     1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--bg);
+  color:      var(--dim2);
+  cursor:     pointer;
+  display:    flex;
+  align-items:     center;
+  justify-content: center;
+  opacity:    0;
+  visibility: hidden;
+  transform:  translateY(8px);
+  transition: opacity .2s, visibility .2s, transform .2s, color .15s, border-color .15s;
+
+  svg {
+    width:  16px;
+    height: 16px;
+    fill:   none;
+    stroke: currentColor;
+    stroke-width:    2;
+    stroke-linecap:  round;
+    stroke-linejoin: round;
+  }
+
+  &:hover { color: var(--fg); border-color: var(--dim2); }
+
+  &.visible {
+    opacity:    1;
+    visibility: visible;
+    transform:  translateY(0);
+  }
+}
+
+@media (max-width: 680px) {
+  .back-to-top { bottom: 16px; right: 16px; }
+}

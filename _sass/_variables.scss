@@ -1,0 +1,54 @@
+// ── Fonts ──────────────────────────────────────────────────────
+$font-serif:  'Spectral', Georgia, 'Times New Roman', serif;
+$font-sc:     'Spectral SC', Georgia, serif;
+$font-mono:   'Fira Code', ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+
+$font-size-base: 17.5px;
+$line-height:    1.9;
+
+// ── Spacing ────────────────────────────────────────────────────
+$max-width:      880px;
+$max-width-post: 1060px;
+$side-pad:       24px;
+
+// ── Light mode palette ─────────────────────────────────────────
+$light-bg:      #fafaf8;
+$light-bg2:     #f2f1ec;
+$light-fg:      #1a1a18;
+$light-dim:     #4a4a44;
+$light-dim2:    #8a8270;
+$light-rule:    #d4d2c8;
+$light-link:    #1a4a8a;   // clear blue — distinguishable
+$light-tag-fg:  #3a3a34;
+$light-tag-bd:  #b8b6ae;
+$light-tag-bg:  #eceae2;
+
+// ── Dark mode palette ──────────────────────────────────────────
+$dark-bg:       #22211e;
+$dark-bg2:      #2b2a26;
+$dark-fg:       #e8e6da;
+$dark-dim:      #bab8a8;
+$dark-dim2:     #918f7e;
+$dark-rule:     #3e3c34;
+$dark-link:     #7aa8e0;   // lighter blue for dark bg
+$dark-tag-fg:   #c0bead;
+$dark-tag-bd:   #4a4840;
+$dark-tag-bg:   #2e2d28;
+
+// ── Code (One Dark — identical in both modes) ──────────────────
+$code-bg:     #282c34;
+$code-bd:     #1e2127;
+$code-gutter: #3e4451;
+$code-bar:    #21252b;
+$code-base:   #abb2bf;
+
+// Syntax tokens
+$s-kw:   #c678dd;
+$s-fn:   #61afef;
+$s-st:   #98c379;
+$s-cm:   #5c6370;
+$s-nm:   #d19a66;
+$s-op:   #abb2bf;
+$s-bi:   #56b6c2;
+$s-var:  #e06c75;
+$s-base: $code-base;

@@ -1,0 +1,54 @@
+{%- comment -%}
+  TOC include for post pages.
+  Desktop (>680px): .toc-col sticky sidebar.
+  Mobile  (≤680px): .toc-col is hidden; a separate fixed floating bar
+                    (.toc-mobile-wrap) is shown instead.
+{%- endcomment -%}
+
+{{- /* ── Desktop sidebar ── */}}
+<aside class="toc-col" aria-label="Table of contents">
+  <div class="toc-inner">
+
+    <details open class="toc-details">
+      <summary class="toc-title">Table of Contents</summary>
+      <ul class="toc-list" id="toc-list"></ul>
+    </details>
+
+    <hr class="toc-rule">
+
+    <div class="toc-meta">
+      <span class="reading-time"></span>
+      <span>{{ page.date | date: "%d %B %Y" }}</span>
+      {%- if page.categories.first -%}
+      <span>{{ page.categories.first | capitalize }}</span>
+      {%- endif -%}
+    </div>
+
+  </div>
+</aside>
+
+{{- /* ── Mobile sticky TOC bar (scroll-triggered) ── */}}
+<div class="toc-mobile-wrap" id="toc-mobile-wrap" aria-label="Table of contents">
+  <button class="toc-mobile-btn"
+          id="toc-mobile-btn"
+          aria-expanded="false"
+          aria-controls="toc-mobile-panel">
+    <span class="toc-mobile-label" id="toc-mobile-label">Contents</span>
+    <svg class="toc-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+</div>
+
+{{- /* ── Mobile bottom-sheet panel ── */}}
+<div class="toc-mobile-panel" id="toc-mobile-panel" aria-hidden="true">
+  <div class="toc-panel-sheet">
+    <div class="toc-panel-header">
+      <span class="toc-panel-title">Table of Contents</span>
+      <button class="toc-panel-close" id="toc-panel-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <nav>
+      <ul class="toc-list" id="toc-mobile-list"></ul>
+    </nav>
+  </div>
+</div>

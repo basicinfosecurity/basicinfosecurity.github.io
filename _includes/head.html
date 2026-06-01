@@ -1,77 +1,59 @@
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <title>{{ page.title }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{% if page.title %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+<meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
 
-    <!-- Open Graph Meta -->
-    <meta content="{{ site.title }}" property="og:site_name">
-    {% if page.title %}
-      <meta content="{{ page.title }}" property="og:title">
-    {% else %}
-      <meta content="{{ site.title }}" property="og:title">
-    {% endif %}
-    {% if page.title %}
-      <meta content="article" property="og:type">
-    {% else %}
-      <meta content="website" property="og:type">
-    {% endif %}
-    {% if page.description %}
-      <meta content="{{ page.description }}" property="og:description">
-    {% else %}
-      <meta content="{{ site.description }}" property="og:description">
-    {% endif %}
-    {% if page.url %}
-      <meta content="{{ site.url }}{{ page.url }}" property="og:url">
-    {% endif %}
-    {% if page.date %}
-      <meta content="{{ page.date | date_to_xmlschema }}" property="article:published_time">
-      <meta content="{{ site.url }}/about/" property="article:author">
-    {% endif %}
-    {% if page.image %}
-      <meta content="{{ site.url }}/assets/img/{{ page.image }}" property="og:image">
-    {% else %}
-      <meta content="{{ '/assets/img/Sandro_Botticelli_-_La_Carte_de_l'Enfer(darkened).jpg' | prepend: site.url }}" property="og:image">
-    {% endif %}
+{% seo %}
+{% feed_meta %}
 
-    <!-- Twitter Cards -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@{{ site.social.twitter }}">
-    <meta name="twitter:creator" content="@{{ site.social.twitter }}">
-    {% if page.title %}
-      <meta name="twitter:title" content="{{ page.title }}">
-    {% else %}
-      <meta name="twitter:title" content="{{ site.title }}">
-    {% endif %}
-    {% if page.url %}
-      <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
-    {% endif %}
-    {% if page.description %}
-      <meta name="twitter:description" content="{{ page.description }}">
-    {% else %}
-      <meta name="twitter:description" content="{{ site.description }}">
-    {% endif %}
-    {% if page.image %}
-      <meta name="twitter:image:src" content="{{ site.url }}/assets/img/{{ page.image }}">
-    {% else %}
-      <meta name="twitter:image:src" content="{{ '/assets/img/Sandro_Botticelli_-_La_Carte_de_l'Enfer(darkened).jpg' | prepend: site.url }}">
-    {% endif %}
+<link rel="icon" href="{{ '/assets/img/favicon.ico' | prepend: site.baseurl }}" type="image/x-icon">
+<link rel="stylesheet" href="{{ '/css/main.css' | prepend: site.baseurl }}?v={{ site.time | date: '%s' }}">
 
+<style>
+/*
+  Fallback for no-JS: !important ensures Rouge table rows can't
+  bleed through even if inline style="" attrs aren't stripped.
+  theme.js strips them at runtime for a cleaner result.
+*/
+.highlight tr, .highlight td, .highlight th,
+.highlight table, .highlight thead, .highlight tbody {
+  background: #f2f1ec !important;
+  border: none !important;
+  padding: 0 !important;
+}
+[data-theme="dark"] .highlight tr,
+[data-theme="dark"] .highlight td,
+[data-theme="dark"] .highlight th,
+[data-theme="dark"] .highlight table,
+[data-theme="dark"] .highlight thead,
+[data-theme="dark"] .highlight tbody { background: #2b2a26 !important; }
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ "/assets/img/favicon.ico" | prepend: site.baseurl }}" />
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .highlight tr,
+  :root:not([data-theme="light"]) .highlight td,
+  :root:not([data-theme="light"]) .highlight th,
+  :root:not([data-theme="light"]) .highlight table,
+  :root:not([data-theme="light"]) .highlight thead,
+  :root:not([data-theme="light"]) .highlight tbody { background: #2b2a26 !important; }
+}
+</style>
 
-    <!-- Come and get me RSS readers -->
-    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
-    
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="{{ "/assets/css/style.css" | prepend: site.baseurl }}">
-    <!--[if IE 8]><link rel="stylesheet" href="{{ "/assets/css/ie.css" | prepend: site.baseurl }}"><![endif]-->
-    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+<!-- Restore saved theme before first paint -->
+<script>
+  (function(){
+    var t = localStorage.getItem('theme');
+    if (t === 'dark')  document.documentElement.setAttribute('data-theme', 'dark');
+    if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  })();
+</script>
 
-    <!-- Modernizr -->
-    <script src="{{ "/assets/js/modernizr.custom.15390.js" | prepend: site.baseurl }}" type="text/javascript"></script>
-
-    {% if site.google_analytics %} {% include google_analytics.html %} {% endif %}
-</head>
+{% if site.google_analytics %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', '{{ site.google_analytics }}');
+</script>
+{% endif %}

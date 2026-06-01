@@ -4,7 +4,6 @@ title: (At) the WIM of Microsoft - Uncovering Microsoft's Patch Secrets
 description: Exploring the WIM File Format for Patch Diffing
 image: Rembrandt_-_The_Philosopher_in_Meditation.jpeg
 ---
-
 # Following the bits
 While patch diffing with [PatchExtract.ps1](https://gist.github.com/wumb0/306f97dc8376c6f53b9f9865f60b4fb5), I encountered a peculiar change in Microsoft's recent patch releases. They were usually packaged as `.cab` files but now released as `.wim` files. What is this file format?
 
