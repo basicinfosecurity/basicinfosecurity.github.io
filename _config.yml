@@ -27,7 +27,7 @@ plugins:
 paginate: 5
 
 theme_mode: auto
-# Default header background image (Long Haul style).
+# Default header background image.
 # Accepts a filename relative to assets/img/ (e.g. "stanczyk_scaled.jpg")
 # or a full path from the site root (e.g. "/assets/img/stanczyk_scaled.jpg").
 # Per-post images (image: in front matter) override this.
